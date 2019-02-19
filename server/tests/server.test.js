@@ -10,7 +10,9 @@ var todos = [{
   text: "First test todo"
 }, {
   _id: new ObjectID(),
-  text: "Second test todo"
+  text: "Second test todo",
+  completed: true,
+  completedAt: 1276374
 }];
 
 
@@ -136,5 +138,58 @@ describe('DELETE /todos/:id', () => {
         .delete('/todos/123')
         .expect(404)
         .end(done);
+  });
+});
+
+describe('PATCH /todos/:id', () => {
+  it('Should update the todo', (done) => {
+    var id = todos[0]._id.toHexString();
+    request(app)
+      .patch(`/todos/${id}`)
+      .send({text:'Some text', completed: true})
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todo.text).toBe('Some text');
+        expect(res.body.todo.completed).toBeTruthy();
+        expect(res.body.todo.completedAt).toBeTruthy();
+      })
+      .end(done);
+      //   if(err) {
+      //     return done(err);
+      //   }
+      //
+      //   Todo.findById(id).then((todo) => {
+      //     expect(todos.text).toBe('Some text');
+      //     expect(todos.completed).toBeTruthy();
+      //     expect(todo.completedAt).toBeA('number');
+      //     done();
+      //   }).catch((e) => done(e));
+      //
+      // });
+  });
+
+  it('Should clear completedAt when completed is false', (done) => {
+    var id = todos[1]._id.toHexString();
+    request(app)
+      .patch(`/todos/${id}`)
+      .send({text: 'Hello World', completed: false})
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todo.text).toBe('Hello World');
+        expect(res.body.todo.completed).toBe(false);
+        expect(res.body.todo.completedAt).toBeFalsy();
+      })
+      .end(done);
+      //   if(err) {
+      //     return done(err);
+      //   }
+      //
+      //   Todo.findById(id).then((todo) => {
+      //     expect(todo.text).toBe('Hello World');
+      //     expect(todo.completed).toBe(false);
+      //     expect(todo.completedAt).toBeFalsy();
+      //     done();
+      //   }).catch((e) => done(e));
+      // })
   });
 });

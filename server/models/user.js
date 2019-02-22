@@ -45,6 +45,7 @@ UserSchema.methods.generateAuthToken = function () {
   var access = 'auth';
   var token = jwt.sign({_id: user._id.toHexString(), access}, 'abc123').toString();
 
+  //user.tokens.push({access, token});
   user.tokens = user.tokens.concat([{access, token}]);
 
   return user.save().then(() => {
@@ -86,4 +87,4 @@ UserSchema.pre('save', function (next) {
 
 var User = mongoose.model('User', UserSchema);
 
-module.exports = {User};
+module.exports = {User}
